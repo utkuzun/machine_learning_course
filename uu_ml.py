@@ -2,16 +2,17 @@ import numpy as np
 import pandas as pd
 
 class uu_ml:
-    def __init__(self, X , y, theta, alpha, num_iter):
+    def __init__(self, X , y, theta, alpha, num_iter, type_learn):
 
         self.X= X                   # input data
         self.y= y                   # targets
         self.theta= theta           # initial parameters
         self.alpha= alpha           # learning rate
         self.num_iter= num_iter     # number iteration for gradient descent algorithm 
+        self.type_learn = type_learn
 
-    def computeCost(self, type_learn):
-        if type_learn == "linear regression":
+    def computeCost(self):
+        if self.type_learn == "linear regression":
 
             m = len(self.y)              # number of samples
             prediction = self.X @ self.theta    # hypothesis (prediction)
@@ -26,7 +27,7 @@ class uu_ml:
         for i in range(self.num_iter):      
             gradient = (self.X @ self.theta - self.y).T @ (self.X)      
             self.theta = self.theta - self.alpha/m*gradient.T
-            J[i] = self.computeCost("linear regression")
+            J[i] = self.computeCost()
         
         return self.theta, J
     
