@@ -2,32 +2,33 @@ import numpy as np
 import pandas as pd
 
 class uu_ml:
-    def __init__(self,X , y, theta, alpha, num_iter):
+    def __init__(self, X , y, theta, alpha, num_iter):
 
-        self.X= X
-        self.y= y
-        self.theta= theta
-        self.alpha= alpha
-        self.num_iter= num_iter
+        self.X= X                   # input data
+        self.y= y                   # targets
+        self.theta= theta           # initial parameters
+        self.alpha= alpha           # learning rate
+        self.num_iter= num_iter     # number iteration for gradient descent algorithm 
 
-    def computeCost(self, type):
-        if type == "linear regression":
+    def computeCost(self, type_learn):
+        if type_learn == "linear regression":
 
-            m = len(self.y)
-            prediction = self.X @ self.theta
-            errors = (prediction - self.y)**2
+            m = len(self.y)              # number of samples
+            prediction = self.X @ self.theta    # hypothesis (prediction)
+            errors = (prediction - self.y)**2   # sum of errors squares
 
-            return 0.5/m*np.sum(errors)
+            return 0.5/m*np.sum(errors)         # cost (J)
 
     def gradientDescent(self):
-        m = len(self.y)
-        J = np.zeros((self.num_iter,1))
+        m = len(self.y)                   # number of samples
+        J = np.zeros((self.num_iter,1))     # J for each iteration
 
-        for i in range(self.num_iter):
-            gradient = (self.X @ self.theta - self.y).T @ (self.X)
+        for i in range(self.num_iter):      
+            gradient = (self.X @ self.theta - self.y).T @ (self.X)      
             self.theta = self.theta - self.alpha/m*gradient.T
             J[i] = self.computeCost("linear regression")
-        return self.theta,J
+        
+        return self.theta, J
     
     def featureNormalize(self):
 
