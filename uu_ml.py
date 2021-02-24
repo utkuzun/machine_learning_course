@@ -24,7 +24,8 @@ class uu_ml:
         m = len(self.y)                   # number of samples
         J = np.zeros((self.num_iter,1))     # J for each iteration
 
-        for i in range(self.num_iter):      
+        for i in range(self.num_iter):
+                  
             gradient = (self.X @ self.theta - self.y).T @ (self.X)      
             self.theta = self.theta - self.alpha/m*gradient.T
             J[i] = self.computeCost()
@@ -45,3 +46,10 @@ class uu_ml:
 
         self.theta = np.linalg.inv(self.X.T @ self.X) @ self.X.T @ self.y
         return self.theta
+
+
+    @staticmethod
+    def sigmiod(z):
+
+        ## This functions calculates sigmoid of a given variable
+        return (1 + np.exp(-1 * z)) ** -1
