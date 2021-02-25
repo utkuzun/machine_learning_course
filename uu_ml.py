@@ -36,14 +36,12 @@ class uu_ml:
             hypo = self.X @ self.theta
             prediction = self.sigmoid(hypo)
             # regularization term of cost
-            J_reg_term = self.lambdaa/2/m * np.sum(self.theta[1:-1] ** 2)
+            J_reg_term = self.lambdaa/2/m * np.sum(self.theta[1:] ** 2)
             # cost 
             J = -1/m * np.sum(self.y.values * np.log(prediction) + (1 - self.y.values) * np.log(1-prediction)) + J_reg_term
 
             temp_theta = pd.DataFrame(np.copy(self.theta))
             temp_theta.loc[0] = 0  # parameters j = 1 to n (not included first term)
-           
-
             grad = (1 / m * np.sum((prediction - self.y.values).values * self.X)) + self.lambdaa / m *temp_theta.T
 
 
