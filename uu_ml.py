@@ -85,3 +85,15 @@ class uu_ml:
         X_norm[X_norm.isna()] = 1
 
         return X_norm 
+
+    def predict(self):
+        
+        hypo = self.X @ self.theta
+        print(self.X)
+        res = self.sigmoid(hypo)
+        print(hypo)
+
+        res[(res >= 0.5)] = 1
+        res[(res < 0.5)] = 0
+
+        return res

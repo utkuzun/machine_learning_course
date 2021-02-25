@@ -36,7 +36,7 @@ X[2] = ex2data1[1]
 """
 
 n = X.shape[1]
-theta = pd.DataFrame(np.ones((n, 1)))
+theta = pd.DataFrame(np.zeros((n, 1)))
 #assign y
 y = pd.DataFrame(ex2data2[2])
 
