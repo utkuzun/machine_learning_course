@@ -14,31 +14,33 @@ def mapFeature(Xone, Xtwo):
 
     degree = 6
     m = len(Xone)
-    out = pd.DataFrame(np.ones((m,1)))
+    out = np.ones((m,28))
     indice = 1
 
     for i in range(1, degree+1):
         for j in range(i+1):
-            out[indice] = (Xone ** (i-j)) * (Xtwo ** j).values
+            out[:, indice] = (Xone ** (i-j)) * (Xtwo ** j)
             indice+=1
     return out
 
-X = mapFeature(ex2data2[0], ex2data2[1])
+X = mapFeature(ex2data2[0].values, ex2data2[1].values)
 
-"""
 
-X = pd.DataFrame(np.ones((ex2data1.shape[0],1)))
+""" 
+X = np.ones((ex2data1.shape[0],3))
  
-X[1] = ex2data1[0]
-X[2] = ex2data1[1]
+X[: ,1] = ex2data1[0].values
+X[:, 2] = ex2data1[1].values
 
- 
-"""
-
+ """
+print(X.shape)
 n = X.shape[1]
-theta = pd.DataFrame(np.zeros((n, 1)))
+theta = np.ones((n, 1))
+#theta = np.array([[-0.00132686887360888], [0.0104313829580538], [0.000559387028960758]]) #for manual array
 #assign y
-y = pd.DataFrame(ex2data2[2])
+y = np.zeros((ex2data2.shape[0],1))
+y[:, 0] = ex2data2[2].values
+
 
 # init ml 
 lambdaa = 10
