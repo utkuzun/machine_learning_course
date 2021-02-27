@@ -21,7 +21,7 @@ class uu_ml:
             errors = (prediction - self.y)**2   # sum of errors squares
 
             J = 0.5/m*np.sum(errors)         # cost (J)
-            grad = np.sum((prediction - self.y).values * self.X) / m
+            grad = np.sum((prediction - self.y) * self.X) / m
 
             return J, grad.T
 
