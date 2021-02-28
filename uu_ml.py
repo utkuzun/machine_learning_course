@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import math
+from scipy.optimize import fmin_bfgs 
+from scipy.optimize import leastsq 
 
 class uu_ml:
     def __init__(self, X , y, theta, alpha, lambdaa, num_iter, type_learn):
@@ -45,7 +47,37 @@ class uu_ml:
             grad = 1 / m * np.sum((prediction - self.y) * self.X, axis=0) + self.lambdaa / m * temp_theta.T
 
 
-            return J, grad.T
+            return J, grad.T.flatten()
+
+
+    def oneVsAll(self):
+
+        _, n = self.X.shape
+        labels = np.unique(self.y)
+        all_theta = np.zeros((labels.shape[0], n))
+        y = np.copy(self.y)
+
+        def objectiveFunc(theta):
+            self.theta[:, 0] = np.copy(theta)
+            [J, _] = self.computeCost()
+            
+
+            return J
+
+        def gradFunc(theta):
+            self.theta[:, 0] = np.copy(theta)
+            [_, grad] = self.computeCost()
+
+            return grad
+
+        for label in labels:
+            self.y = np.array([[1 if y[i] == label else 0] for i in range(len(y))])
+            theta = fmin_bfgs(objectiveFunc, self.theta, fprime= gradFunc)
+
+            all_theta[label, :] = theta
+
+        return all_theta
+
 
     def gradientDescent(self):
         m = len(self.y)                   # number of samples
@@ -70,6 +102,14 @@ class uu_ml:
 
 
     @staticmethod
+    def predictOneVsAll(X, y, theta):
+        pred = np.argmax(X @ theta.T, axis = 1)
+        rating = np.array([[1 if y[i] == pred[i] else 0] for i in range(len(y))])
+        return pred, np.mean(rating) * 100
+        
+
+
+    @staticmethod
     def sigmoid(z):
 
         ## This functions calculates sigmoid of a given variable
@@ -89,9 +129,7 @@ class uu_ml:
     def predict(self):
         
         hypo = self.X @ self.theta
-        print(self.X)
         res = self.sigmoid(hypo)
-        print(hypo)
 
         res[(res >= 0.5)] = 1
         res[(res < 0.5)] = 0
