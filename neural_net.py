@@ -6,14 +6,20 @@ import matplotlib.pyplot as plt
 import scipy.io
 from uu_ml import uu_ml
 
-
-
-
-data1 = scipy.io.loadmat('samples/NN_ex3/ex3data1.mat')
+data1 = scipy.io.loadmat('samples/NN_ex4/ex4data1.mat')
+data2 = scipy.io.loadmat('samples/NN_ex4/ex4weights.mat')
 X = np.array(data1["X"])          # 5000 samples with 400 parameters(20x20 gray scale) 
 y = np.array(data1["y"])          # target as 0-9 digits
+#y[y==10] = 0            # convert 10s to 0s
 
-y[y==10] = 0            # convert 10s to 0s
+
+theta1 = np.array(data2["Theta1"])  # take first layer theta 
+theta2 = np.array(data2["Theta2"])  #take second layer theta
+
+
+# input_layer_size  = 400   # 20x20 Input Images of Digits
+# hidden_layer_size = 25   # 25 hidden units
+# num_labels = np.unique(y)          # 10 labels, from 1 to 10 (note that we have mapped "0" to label 10)
 
 
 
@@ -34,7 +40,7 @@ def showDigitRows(n, data):  #select n square samples to show
 
 n= 5
 
-grid = showDigitRows(10, X)
+grid = showDigitRows(n, X)
 
 fig, ax = plt.subplots()
 
@@ -51,33 +57,9 @@ X = np.concatenate((np.ones((X.shape[0], 1)), X_copy), axis = 1)
 
 theta_initial = np.zeros((X.shape[1], 1))
 alpha = 0.1
-lambdaa = 0.1
+lambdaa = 1
 num_iter = 1500
 
-ml = uu_ml(X, y, theta_initial, alpha, lambdaa, num_iter, "logistic regression")
-all_theta = ml.oneVsAll()
-[predictions, accuracy] = ml.predictOneVsAll(X, y, all_theta)
-print(f" Samples are predicted with %{accuracy}accuracy")
+ml = uu_ml(X , y, theta1, alpha, lambdaa, num_iter, "logistic regression")
+ml.nnComputeCost(X, y, theta1, theta2, lambdaa)
 
-
-
-# check for logistic regresiion cost and grad function for temporary created values
-""" 
-X_t = np.array([[1, 0.1, 0.6, 1.1],
-               [1, 0.2, 0.7, 1.2],
-               [1, 0.3, 0.8, 1.3],
-               [1, 0.4, 0.9, 1.4],
-               [1, 0.5, 1, 1.5]])
-
-y_t = np.array([[1,0,1,0,1]]).T
-
-
-theta_t = np.array([[-2], [-1], [1], [2]])
-
-lambdaa_t = 3
-
-ml = uu_ml(X_t , y_t, theta_t, 0, lambdaa_t, 1500, "logistic regression")
-
-print(ml.computeCost())
-
- """

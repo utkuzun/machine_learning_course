@@ -70,9 +70,19 @@ class uu_ml:
 
             return grad
 
+
+        # def resFunc(theta):
+        #     self.theta[:, 0] = np.copy(theta)
+        #     hypo = self.X @ self.theta
+        #     prediction = self.sigmoid(hypo)
+        #     err = (self.y - prediction)
+
+        #     return err
+
         for label in labels:
             self.y = np.array([[1 if y[i] == label else 0] for i in range(len(y))])
-            theta = fmin_bfgs(objectiveFunc, self.theta, fprime= gradFunc)
+            theta = fmin_bfgs(objectiveFunc, self.theta, fprime= gradFunc, maxiter= 100)
+            # calculate theta with bfgs optimization function
 
             all_theta[label, :] = theta
 
@@ -100,9 +110,52 @@ class uu_ml:
         self.theta = np.linalg.inv(self.X.T @ self.X) @ self.X.T @ self.y
         return self.theta
 
+    @staticmethod
+    def nnComputeCost(X, y, theta1, theta2, lambdaa):
+        
+        def sigmoid(z):
+
+        ## This functions calculates sigmoid of a given variable
+            return (1 + np.exp(-1 * z)) ** -1
+
+        m = len(y)
+        
+        z2 = theta1 @ X.T
+        a2 = sigmoid(z2)
+        a2 = np.concatenate((np.ones((a2.shape[1], 1)), a2.T), axis = 1)
+        a3 = sigmoid(theta2 @ a2.T)
+        
+        J = 0
+        pred = np.zeros((a3.shape[1], 1))
+
+        for label in range(1, 11, 1):
+            pred[:, 0] = a3[label-1, :]
+            c = np.array([[1 if y[i] == label else 0] for i in range(len(y))])
+            J = J - 1/m * np.sum(c * np.log(pred) + (1 - c) * np.log(1 - pred), axis = 0)
+            
+        temp1 = np.copy(theta1)
+        temp2 = np.copy(theta2)
+
+        temp1[:,0] = 0
+        temp2[:,0] = 0
+
+        J_reg_term = lambdaa/2/m * (np.sum(temp1.flatten() ** 2) + np.sum(temp2.flatten() ** 2))
+
+        J = J + J_reg_term
+
+
+        return(J)
+
+
+        
+
+
 
     @staticmethod
     def predictOneVsAll(X, y, theta):
+
+        # this function predicts multiclass labels from probailities
+
         pred = np.argmax(X @ theta.T, axis = 1)
         rating = np.array([[1 if y[i] == pred[i] else 0] for i in range(len(y))])
         return pred, np.mean(rating) * 100
@@ -127,6 +180,7 @@ class uu_ml:
         return X_norm 
 
     def predict(self):
+        # this functions predict logistic regression reults with probability
         
         hypo = self.X @ self.theta
         res = self.sigmoid(hypo)
