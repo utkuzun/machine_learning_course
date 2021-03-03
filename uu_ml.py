@@ -118,18 +118,25 @@ class uu_ml:
         ## This functions calculates sigmoid of a given variable
             return (1 + np.exp(-1 * z)) ** -1
 
+        def sigmoidGradient(z):
+            return sigmoid(z) * (1 - sigmoid(z))
+
         m = len(y)
         
         z2 = theta1 @ X.T
         a2 = sigmoid(z2)
         a2 = np.concatenate((np.ones((a2.shape[1], 1)), a2.T), axis = 1)
         a3 = sigmoid(theta2 @ a2.T)
+
+        labels = np.unique(y)
         
         J = 0
+        theta1_grad = np.zeros_like(theta1)
+        theta2_grad = np.zeros_like(theta2)
         pred = np.zeros((a3.shape[1], 1))
 
-        for label in range(1, 11, 1):
-            pred[:, 0] = a3[label-1, :]
+        for label in labels:
+            pred[:, 0] = a3[label, :]
             c = np.array([[1 if y[i] == label else 0] for i in range(len(y))])
             J = J - 1/m * np.sum(c * np.log(pred) + (1 - c) * np.log(1 - pred), axis = 0)
             
@@ -142,9 +149,36 @@ class uu_ml:
         J_reg_term = lambdaa/2/m * (np.sum(temp1.flatten() ** 2) + np.sum(temp2.flatten() ** 2))
 
         J = J + J_reg_term
+        am1 = np.zeros((1, X.shape[1]))
+        for i in range(m):
+            
+            # feedforward for each sample
+            am1[0, :] = np.copy(X[i, :])
+            z2 = theta1 @ am1.T
+            am2 = sigmoid(z2)
+            am2 = np.concatenate(([[1]], am2), axis=0)
+            z3 = theta2 @ am2
+            am3 = sigmoid(z3)
+
+            #backward for each sample
+
+            delta3 = am3 - np.array([[1 if y[i] == label else 0] for label in labels])
+            tempt2 = np.copy(theta2.T)
+            delta2 = (tempt2[1:, :] @ delta3) * sigmoidGradient(z2)
+            theta2_grad = theta2_grad + delta3 @ am2.T
+            theta1_grad = theta1_grad + delta2 @ am1
+
+        
+        grad = np.concatenate((theta1_grad.flatten(), theta2_grad.flatten()), axis = 0)
+
+        grad = grad / m
+        grad = grad + lambdaa / m * np.concatenate((temp1.flatten(), temp2.flatten()), axis = 0)
+        print(theta2_grad[:, 1], theta1_grad[:, 1])
 
 
-        return(J)
+        return(J, grad[100:110])
+
+
 
 
         

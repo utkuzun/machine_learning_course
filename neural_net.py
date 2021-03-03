@@ -10,11 +10,17 @@ data1 = scipy.io.loadmat('samples/NN_ex4/ex4data1.mat')
 data2 = scipy.io.loadmat('samples/NN_ex4/ex4weights.mat')
 X = np.array(data1["X"])          # 5000 samples with 400 parameters(20x20 gray scale) 
 y = np.array(data1["y"])          # target as 0-9 digits
-#y[y==10] = 0            # convert 10s to 0s
+y[y==10] = 0            # convert 10s to 0s
 
 
 theta1 = np.array(data2["Theta1"])  # take first layer theta 
 theta2 = np.array(data2["Theta2"])  #take second layer theta
+
+temp2 = np.copy(theta2)
+
+theta2[0, :] = temp2[9, :]
+
+theta2[1:, :] = temp2[0: 9, :]
 
 
 # input_layer_size  = 400   # 20x20 Input Images of Digits
@@ -57,9 +63,9 @@ X = np.concatenate((np.ones((X.shape[0], 1)), X_copy), axis = 1)
 
 theta_initial = np.zeros((X.shape[1], 1))
 alpha = 0.1
-lambdaa = 1
+lambdaa = 0
 num_iter = 1500
 
 ml = uu_ml(X , y, theta1, alpha, lambdaa, num_iter, "logistic regression")
-ml.nnComputeCost(X, y, theta1, theta2, lambdaa)
+print(ml.nnComputeCost(X, y, theta1, theta2, lambdaa))
 
