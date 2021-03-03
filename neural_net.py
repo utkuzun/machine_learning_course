@@ -22,6 +22,10 @@ theta2[0, :] = temp2[9, :]
 
 theta2[1:, :] = temp2[0: 9, :]
 
+nn_params = np.zeros((np.concatenate((theta1.flatten(), theta2.flatten()), axis = 0).shape[0], 1))
+nn_params[:, 0] = np.concatenate((theta1.flatten(), theta2.flatten()), axis = 0)
+
+
 
 # input_layer_size  = 400   # 20x20 Input Images of Digits
 # hidden_layer_size = 25   # 25 hidden units
@@ -60,12 +64,54 @@ plt.show()
 X_copy = np.copy(X)
 
 X = np.concatenate((np.ones((X.shape[0], 1)), X_copy), axis = 1)
+# add X0 term 1s to X
 
-theta_initial = np.zeros((X.shape[1], 1))
+# training parameters
 alpha = 0.1
 lambdaa = 0
 num_iter = 1500
+n_hidden_layers = 25
+params = X.shape[1]
 
+#initialize ml
 ml = uu_ml(X , y, theta1, alpha, lambdaa, num_iter, "logistic regression")
-print(ml.nnComputeCost(X, y, theta1, theta2, lambdaa))
+
+# random initiliaze params
+
+theta1_initial = ml.randInitializeWeights(n_hidden_layers , X.shape[1])
+theta2_initial = ml.randInitializeWeights(len(np.unique(y)), n_hidden_layers + 1)
+
+# concat the params
+nn_initial = np.zeros((np.concatenate((theta1_initial.flatten(), theta2_initial.flatten()), axis = 0).shape[0], 1))
+nn_initial[:, 0] = np.concatenate((theta1_initial.flatten(), theta2_initial.flatten()), axis = 0)
+
+
+
+print(ml.nnComputeCost(X, y, nn_params, lambdaa, params , n_hidden_layers , len(np.unique(y))))
+
+""" def numericalGradientCheck(X, y, nn_initial, lambdaa, params , n_hidden_layers, on):
+
+    n = np.concatenate((theta1.flatten(), theta2.flatten()), axis = 0).shape[0]
+    grad = np.zeros((n))
+
+    for i in range(15):
+
+        epsilon = 0.0001
+
+        thetaPlus1 = np.copy(theta1)
+        thetaPlus2 = np.copy(theta2)
+
+        thetaPlus1 = thetaPlus1 + epsilon
+        thetaPlus2 = thetaPlus2 + epsilon
+
+        thetaMinus1 = thetaPlus1 -2 * epsilon
+        thetaMinus2 = thetaPlus2 -2 * epsilon
+
+        
+        [J1, _] = ml.nnComputeCost(X, y, thetaPlus1, thetaPlus2, lambdaa)
+        [J2, _] = ml.nnComputeCost(X, y, thetaMinus1, thetaMinus2, lambdaa)
+
+        grad[i] = (J1 - J2) / 2 /epsilon
+
+    return (grad[:15]) """
 

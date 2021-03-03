@@ -111,7 +111,7 @@ class uu_ml:
         return self.theta
 
     @staticmethod
-    def nnComputeCost(X, y, theta1, theta2, lambdaa):
+    def nnComputeCost(X, y, nn_params, lambdaa, n, hn, on):
         
         def sigmoid(z):
 
@@ -121,7 +121,12 @@ class uu_ml:
         def sigmoidGradient(z):
             return sigmoid(z) * (1 - sigmoid(z))
 
+
         m = len(y)
+        
+        theta1 = nn_params[:(n * hn), 0].reshape(hn, n)
+        theta2 = nn_params[(n) * hn: ,0].reshape(on, hn +1)
+
         
         z2 = theta1 @ X.T
         a2 = sigmoid(z2)
@@ -173,15 +178,17 @@ class uu_ml:
 
         grad = grad / m
         grad = grad + lambdaa / m * np.concatenate((temp1.flatten(), temp2.flatten()), axis = 0)
-        print(theta2_grad[:, 1], theta1_grad[:, 1])
 
 
-        return(J, grad[100:110])
+        return(J, grad[:15])
 
+    @staticmethod
+    def randInitializeWeights(L_in, L_out):
 
+        epsion_init = math.sqrt(6) /(math.sqrt(L_in + L_out))
 
+        return np.random.rand(L_in, L_out) * 2 * epsion_init - epsion_init
 
-        
 
 
 
