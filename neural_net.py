@@ -36,7 +36,7 @@ nn_params[:, 0] = np.concatenate((theta1.flatten(), theta2.flatten()), axis = 0)
 
 
 # show some of the digits in sample
-""" 
+ 
 def showDigitRows(n, data):  #select n square samples to show
 
     grid = np.zeros((n*20, n*20))
@@ -52,6 +52,7 @@ def showDigitRows(n, data):  #select n square samples to show
 
 n= 5
 
+#grid = showDigitRows(n, theta1[:, 1:])  #visualize the hidden layer
 grid = showDigitRows(n, X)
 
 fig, ax = plt.subplots()
@@ -60,7 +61,7 @@ ax.imshow(grid, extent=[0,20,0,20])
 ax.axis("off")
 plt.show()
 
- """
+
 # prepare input paramters
 
 X_copy = np.copy(X)
@@ -70,7 +71,7 @@ X = np.concatenate((np.ones((X.shape[0], 1)), X_copy), axis = 1)
 
 # training parameters
 alpha = 0.1
-lambdaa = 3
+lambdaa = 1
 num_iter = 1500
 n_hidden_layers = 25
 params = X.shape[1]
@@ -89,7 +90,7 @@ nn_initial = np.zeros((np.concatenate((theta1_initial.flatten(), theta2_initial.
 nn_initial[:, 0] = np.concatenate((theta1_initial.flatten(), theta2_initial.flatten()), axis = 0)
 
 
-#compute cost
+#training of the neural network
 theta = ml.nn_optimize(X, y, nn_initial, lambdaa, params , n_hidden_layers , len(np.unique(y)))
 
 thetacomp1 = theta[:(X.shape[1] * n_hidden_layers)].reshape(n_hidden_layers, X.shape[1])
