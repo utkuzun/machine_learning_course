@@ -110,8 +110,7 @@ class uu_ml:
         self.theta = np.linalg.inv(self.X.T @ self.X) @ self.X.T @ self.y
         return self.theta
 
-    @staticmethod
-    def nnComputeCost(X, y, nn_params, lambdaa, n, hn, on):
+    def nnComputeCost(self, X, y, nn_params, lambdaa, n, hn, on):
         
         def sigmoid(z):
 
@@ -123,10 +122,15 @@ class uu_ml:
 
 
         m = len(y)
-        
-        theta1 = nn_params[:(n * hn), 0].reshape(hn, n)
-        theta2 = nn_params[(n) * hn: ,0].reshape(on, hn +1)
 
+        if len(nn_params.shape) == 2:
+
+        
+            theta1 = nn_params[:(n * hn), 0].reshape(hn, n)
+            theta2 = nn_params[(n) * hn: ,0].reshape(on, hn +1)
+        else:
+            theta1 = nn_params[:(n * hn)].reshape(hn, n)
+            theta2 = nn_params[(n) * hn:].reshape(on, hn +1)
         
         z2 = theta1 @ X.T
         a2 = sigmoid(z2)
@@ -179,8 +183,26 @@ class uu_ml:
         grad = grad / m
         grad = grad + lambdaa / m * np.concatenate((temp1.flatten(), temp2.flatten()), axis = 0)
 
+        return(J, grad.T)
 
-        return(J, grad[:15])
+    def nn_optimize(self, X, y, nn_params, lambdaa, n, hn, on):
+
+        def objectiveFunc(theta):
+            [J, _] = self.nnComputeCost(X, y, theta, lambdaa, n, hn, on)
+            
+
+            return J
+        
+        def gradFunc(theta):
+            [_, grad] = self.nnComputeCost(X, y, theta, lambdaa, n, hn, on)
+
+            return grad
+
+        theta = fmin_bfgs(objectiveFunc, nn_params, fprime= gradFunc, maxiter= 15)
+        # calculate theta with bfgs optimization function
+
+        return theta
+
 
     @staticmethod
     def randInitializeWeights(L_in, L_out):
@@ -189,6 +211,24 @@ class uu_ml:
 
         return np.random.rand(L_in, L_out) * 2 * epsion_init - epsion_init
 
+
+    @staticmethod 
+    def predictNN(X, y, theta1, theta2):
+
+        def sigmoid(z):
+
+        ## This functions calculates sigmoid of a given variable
+            return (1 + np.exp(-1 * z)) ** -1
+
+        z2 = theta1 @ X.T
+        a2 = sigmoid(z2)
+        a2 = np.concatenate((np.ones((a2.shape[1], 1)), a2.T), axis = 1)
+        a3 = sigmoid(theta2 @ a2.T)
+
+        pred = np.argmax(a3, axis = 0)
+        rating = np.array([[1 if y[i] == pred[i] else 0] for i in range(len(y))])
+
+        return pred, np.mean(rating) * 100
 
 
 
