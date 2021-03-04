@@ -96,7 +96,8 @@ theta = ml.nn_optimize(X, y, nn_initial, lambdaa, params , n_hidden_layers , len
 thetacomp1 = theta[:(X.shape[1] * n_hidden_layers)].reshape(n_hidden_layers, X.shape[1])
 thetacomp2 = theta[(X.shape[1]) * n_hidden_layers:].reshape(len(np.unique(y)), n_hidden_layers +1)
 
-print(ml.predictNN(X, y, thetacomp1, thetacomp2))
+[pred, rating] = ml.predictNN(X, y, thetacomp1, thetacomp2)
+print(f"NN predicted the first 10 samples as {pred[:10]}. \n All values predicted by %{rating}")
 
 
 """ def numericalGradientCheck(X, y, nn_initial, lambdaa, params , n_hidden_layers, on):
