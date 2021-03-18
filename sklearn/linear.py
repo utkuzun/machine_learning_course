@@ -79,7 +79,7 @@ ax.legend()
 
 
 # #########################################################################
-# Linear Regression for variables
+# Linear Regression for more than one variable variables
 
 data2 = pd.read_csv("samples/linear gradient/ex1data2.txt", header = None)
 
