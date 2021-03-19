@@ -11,6 +11,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 import random
 import math
 import scipy.io
+import joblib
 
 # ########################################################################################
 
@@ -77,11 +78,20 @@ ax.axis("off")
 
 # ##############################################################################
 # predict adn evaluate for each label
+model_saved = False
 
+try:
+    log_reg = joblib.load("multiclass.sav")
+    model_saved = True
+except:
+    print("There is no file for this model !!!")
 
-log_reg = LogisticRegression(C= 1, multi_class= "ovr", solver="lbfgs", penalty= "l2")
+if not model_saved:
+    log_reg = LogisticRegression(C= 1, multi_class= "ovr", solver="lbfgs", penalty= "l2")
 
-log_reg.fit(X, y)
+    log_reg.fit(X, y)
+
+    joblib.dump(log_reg, "multiclass.sav")
 
 for i in log_reg.classes_:
 
