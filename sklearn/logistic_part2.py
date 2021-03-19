@@ -51,7 +51,7 @@ for i, color in zip(log_reg.classes_, colors):
 
     idx = np.where(y == i)
 
-    ax.plot(X_raw[idx, 0], X_raw[idx, 1], f"{color}o")
+    ax.plot(X_raw[idx, 0], X_raw[idx, 1], f"{color}x")
 
 ax.set_xlabel("Michrochip Test 1")
 ax.set_ylabel("Michrochip Test 2")
