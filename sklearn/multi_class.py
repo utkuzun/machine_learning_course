@@ -77,7 +77,7 @@ ax.axis("off")
 # plt.show()
 
 # ##############################################################################
-# predict adn evaluate for each label
+# predict and evaluate for each label
 model_saved = False
 
 try:
@@ -87,7 +87,7 @@ except:
     print("There is no file for this model !!!")
 
 if not model_saved:
-    log_reg = LogisticRegression(C= 1, multi_class= "ovr", solver="lbfgs", penalty= "l2")
+    log_reg = LogisticRegression(C= 1, multi_class= "multinomial", solver="lbfgs", penalty= "l2")
 
     log_reg.fit(X, y)
 
