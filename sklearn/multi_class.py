@@ -25,6 +25,12 @@ y = np.array(data["y"]).flatten()
 
 y[y == 10] = 0
 
+# write a saved model name in order to execute created model
+# Leave it as it is and make new model below
+
+model_name = ""
+new_model_name = "multiclass.sav"
+
 
 # labelize the targer values 
 
@@ -81,7 +87,7 @@ ax.axis("off")
 model_saved = False
 
 try:
-    log_reg = joblib.load("multiclass.sav")
+    log_reg = joblib.load(model_name)
     model_saved = True
 except:
     print("There is no file for this model !!!")
@@ -91,7 +97,7 @@ if not model_saved:
 
     log_reg.fit(X, y)
 
-    joblib.dump(log_reg, "multiclass.sav")
+    joblib.dump(log_reg, new_model_name)
 
 for i in log_reg.classes_:
 
