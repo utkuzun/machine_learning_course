@@ -159,7 +159,7 @@ ax.set_title(f"Polynomial and Linear Regression with no regularization")
 
 
 # #############################################################################################
-# Learning curve of polynomial regression
+# Learning curve of polynomail regression
 
 X_val_poly = poly.fit_transform(X_val.reshape(-1, 1))
 X_val_poly[:,1:] = X_val_poly[:,1:]  - mu
@@ -172,8 +172,6 @@ names = ["Train", "Cross Validation"]
 pred_poly_val = poly_reg.predict(X_val_poly)
 pred_poly = poly_reg.predict(X_poly)
 
-mlp = Ridge(alpha=0)
-
 err_t, err_val = learningCurve(X_poly, pred_poly, X_val_poly, pred_poly_val, poly_reg)
 
 ax3.plot(range(1, X.shape[0], 1), err_t, "-r", label=names[0])
@@ -184,6 +182,46 @@ ax3.set_ylabel("Error")
 
 ax3.legend(ax3.get_lines(), names, ncol =2, loc ="upper right")
 
+# ########################################################################################
+# Cross Validation with lambdaas
+
+lambdaa = np.logspace(-2, 1, 9)
+
+def plot_CVlambda(X, y, X_val, y_val, lambdaas):
+
+    err_t = []
+    err_val = []
+
+    for lambdaa in lambdaas:
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", module="sklearn")
+
+            poly_cv = Ridge(alpha = lambdaa)
+            poly_cv.fit(X, y)
+
+        pred = poly_cv.predict(X)
+        pred_val = poly_cv.predict(X_val)
+
+        err_t.append(mean_squared_error(y, pred))
+        err_val.append(mean_squared_error(y_val, pred_val))
+
+    return np.array(err_t), np.array(err_val)
+
+
+err_t_cv, err_val_cv = plot_CVlambda(X_poly, y, X_val_poly, y_val, lambdaa) 
+
+fig, ax4 = plt.subplots(figsize= (6, 4))
+
+ax4.plot(lambdaa, err_t_cv, "-r", label = "Train")
+ax4.plot(lambdaa, err_val_cv, "--b", label ="Cross Validation")
+
+ax4.set_xlabel("Lambda values")
+ax4.set_ylabel("Error")
+
+ax4.legend(loc = "upper right", ncol=1)
+
+print(err_t_cv, err_val_cv)
 
 plt.show()
 
